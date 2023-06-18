@@ -1,0 +1,20 @@
+.box {
+  @apply inline-flex flex-col justify-center items-center;
+  @apply text-center bg-[#FAFAFA] rounded-md p-4 max-w-xs border border-slate-200 cursor-pointer;
+  &:hover {
+    @apply border-slate-300;
+  }
+  img {
+    @apply w-8 inline;
+  }
+  h3 {
+    @apply text-[#0E1726] text-lg;
+  }
+  p {
+    @apply text-[#888EA8] text-sm;
+  }
+  &.disabled {
+    @apply opacity-50;
+    @apply cursor-not-allowed pointer-events-none;
+  }
+}

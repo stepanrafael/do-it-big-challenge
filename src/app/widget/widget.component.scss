@@ -1,0 +1,45 @@
+.highlighted {
+  box-shadow: 0 0 0 2px orange;
+}
+
+.selected {
+  @apply relative;
+  box-shadow: 0 0 0 2px green;
+  &::before {
+    @apply absolute top-0 left-0 bg-[green] text-white px-1 py-0.5 text-sm;
+    content: "Selected";
+  }
+}
+
+.predicted {
+  @apply relative;
+  box-shadow: 0 0 0 2px blue;
+  &::before {
+    @apply absolute top-0 left-0 bg-[blue] text-white px-1 py-0.5 text-sm;
+    content: "Predicted";
+  }
+}
+
+.selected-action {
+  @apply relative;
+  box-shadow: 0 0 0 2px red;
+}
+
+.states {
+  h3 {
+    @apply font-bold text-lg;
+  }
+}
+
+.primary {
+  @apply bg-[#4361EE] px-6 py-2 text-white rounded-md border border-[#4361EE];
+}
+
+.default {
+  @apply bg-white px-6 py-2 text-[#4361EE] rounded-md border border-[#4361EE];
+}
+
+.disabled {
+  @apply opacity-50;
+  @apply cursor-not-allowed pointer-events-none;
+}

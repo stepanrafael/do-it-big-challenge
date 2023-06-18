@@ -1,0 +1,111 @@
+<div id="widget" class="inline-flex justify-center w-full fixed bottom-0">
+  <div
+    class="w-11/12 max-w-7xl bg-white rounded-tl-md rounded-tr-md p-4 inline-flex flex-col gap-4"
+    style="box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1)"
+  >
+    <!-- States -->
+    <div class="states">
+      <ng-container *ngTemplateOutlet="WidgetStates"></ng-container>
+    </div>
+
+    <!-- Actions -->
+    <div
+      class="inline-flex justify-between gap-4 w-full"
+      *ngIf="
+        currentState === States.selectAction || currentState === States.allowBot
+      "
+    >
+      <app-action
+        *ngFor="let item of actionsList"
+        [item]="item"
+        (click)="pickAction(item)"
+      ></app-action>
+    </div>
+
+    <!-- Run Bot -->
+    <div
+      class="inline-flex justify-end gap-2 w-full"
+      *ngIf="currentState === States.allowBot"
+    >
+      <button
+        (click)="runBot()"
+        class="primary"
+        [class.disabled]="!this.selectedElementsForAction.length"
+      >
+        Run Bot
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Widget States -->
+<ng-template #WidgetStates>
+  <!-- State 1 -->
+  <ng-container *ngIf="currentState === States.selectElement">
+    <ng-container *ngTemplateOutlet="State1"></ng-container>
+  </ng-container>
+
+  <!-- State 2 -->
+  <ng-container
+    *ngIf="
+      currentState === States.selectAction || currentState === States.allowBot
+    "
+  >
+    <ng-container *ngTemplateOutlet="State2"></ng-container>
+  </ng-container>
+
+  <!-- State 3 -->
+  <ng-container *ngIf="currentState === States.actionSelection">
+    <ng-container *ngTemplateOutlet="State3"></ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #State1>
+  <h3>Step 1. For loop</h3>
+  <p *ngIf="!selectedElements.length">Select elements on the page</p>
+  <p *ngIf="selectedElements.length">
+    {{ selectedElements.length }} element(s) selected in total
+  </p>
+  <div class="inline-flex justify-end gap-2 w-full">
+    <button (click)="resetAll()" class="default">Reset</button>
+    <button
+      (click)="save()"
+      class="primary"
+      [class.disabled]="!selectedElements.length"
+    >
+      Save
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #State2>
+  <div class="inline-flex">
+    <span
+      (click)="currentState = States.selectElement"
+      class="cursor-pointer mr-2 opacity-50 inline-flex items-center"
+    >
+      <img src="/assets/icons/Back.png" alt="" class="w-3 h-3 mr-1" />
+      Back
+    </span>
+    <h3>Step 2. Do an action on each element</h3>
+  </div>
+  <p>Add action you want the bot to do on the page</p>
+</ng-template>
+
+<ng-template #State3>
+  <div class="inline-flex">
+    <span
+      (click)="currentState = States.selectAction"
+      class="cursor-pointer mr-2 opacity-50 inline-flex items-center"
+    >
+      <img src="/assets/icons/Back.png" alt="" class="w-3 h-3 mr-1" />
+      Back
+    </span>
+    <h3>Step 3. {{ actionName }}</h3>
+  </div>
+  <p>{{ actionDescription }}</p>
+  <div class="inline-flex justify-end gap-2 w-full">
+    <button (click)="resetAll()" class="default">Reset</button>
+    <button (click)="save()" class="primary">Save</button>
+  </div>
+</ng-template>
