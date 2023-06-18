@@ -3,8 +3,8 @@ import {
   Component,
   NgZone,
   ViewEncapsulation,
-} from '@angular/core';
-import { Action } from './action/action.component';
+} from "@angular/core";
+import { Action } from "./action/action.component";
 
 enum States {
   selectElement = 1,
@@ -14,59 +14,59 @@ enum States {
 }
 
 @Component({
-  selector: 'app-widget',
-  templateUrl: './widget.component.html',
-  styleUrls: ['./widget.component.scss'],
+  selector: "app-widget",
+  templateUrl: "./widget.component.html",
+  styleUrls: ["./widget.component.scss"],
   encapsulation: ViewEncapsulation.None,
 })
 export class WidgetComponent {
   readonly States = States;
-  readonly IdentifySelectionByAttr = 'selected';
+  readonly IdentifySelectionByAttr = "selected";
   currentState = States.selectElement;
-  actionName = '';
-  actionDescription = '';
+  actionName = "";
+  actionDescription = "";
   selectedElements: HTMLElement[] = [];
   selectedElementsForAction: HTMLElement[] = [];
 
   actionsList: Action[] = [
     {
-      id: 'click',
-      title: 'Click a button',
-      description: 'Allows you to click on a button for each element',
-      instruction: 'Select elements to be clicked',
-      icon: 'Cursor.png',
+      id: "click",
+      title: "Click a button",
+      description: "Allows you to click on a button for each element",
+      instruction: "Select elements to be clicked",
+      icon: "Cursor.png",
       disabled: false,
     },
     {
-      id: 'input',
-      title: 'Input text',
-      description: 'Allows you to input text for each element',
-      instruction: 'Select inputs elements',
-      icon: 'Text.png',
+      id: "input",
+      title: "Input text",
+      description: "Allows you to input text for each element",
+      instruction: "Select inputs elements",
+      icon: "Text.png",
       disabled: true,
     },
     {
-      id: 'store',
-      title: 'Store data',
-      description: 'Allows you to store data for each element',
-      instruction: 'Select any elements',
-      icon: 'Database.png',
+      id: "store",
+      title: "Store data",
+      description: "Allows you to store data for each element",
+      instruction: "Select any elements",
+      icon: "Database.png",
       disabled: true,
     },
     {
-      id: 'aggregation',
-      title: 'Aggregation',
-      description: 'Allows you to aggregate data for each element',
-      instruction: 'Select any elements',
-      icon: 'List.png',
+      id: "aggregation",
+      title: "Aggregation",
+      description: "Allows you to aggregate data for each element",
+      instruction: "Select any elements",
+      icon: "List.png",
       disabled: true,
     },
     {
-      id: 'loop',
-      title: 'For loop',
-      description: 'Allows you to loop through each element',
-      instruction: 'Select any elements',
-      icon: 'Restart.png',
+      id: "loop",
+      title: "For loop",
+      description: "Allows you to loop through each element",
+      instruction: "Select any elements",
+      icon: "Restart.png",
       disabled: true,
     },
   ];
@@ -112,12 +112,12 @@ export class WidgetComponent {
   ngOnInit(): void {
     this._ngZone.runOutsideAngular(() => {
       window.addEventListener(
-        'mouseover',
+        "mouseover",
         this.mouseOverEvent.bind(this),
         true
       );
-      window.addEventListener('mouseout', this.mouseOutEvent.bind(this), true);
-      window.addEventListener('click', this.clickEvent.bind(this), true);
+      window.addEventListener("mouseout", this.mouseOutEvent.bind(this), true);
+      window.addEventListener("click", this.clickEvent.bind(this), true);
     });
   }
 
@@ -133,7 +133,7 @@ export class WidgetComponent {
     this.removeElements();
     this.selectedElements = [];
     this.selectedElementsForAction = [];
-    this.actionName = '';
+    this.actionName = "";
     this.currentState = States.selectElement;
     this._cdr.detectChanges();
   }
@@ -152,7 +152,6 @@ export class WidgetComponent {
   }
 
   runBot(): void {
-    console.log(this.selectedElementsForAction);
     this.selectedElementsForAction.forEach((element) => {
       element.click();
     });
@@ -160,25 +159,24 @@ export class WidgetComponent {
   }
 
   isInWidget(element: HTMLElement): boolean {
-    return element.closest('#widget') ? true : false;
+    return element.closest("#widget") ? true : false;
   }
 
   mouseOverEvent(event: Event): void {
     const element = event.target as HTMLElement;
     if (!this.isInWidget(element) && this.allowHighlights) {
-      element.classList.add('highlighted');
+      element.classList.add("highlighted");
     }
   }
 
   mouseOutEvent(event: Event): void {
     const element = event.target as HTMLElement;
     if (!this.isInWidget(element) && this.allowHighlights) {
-      element.classList.remove('highlighted');
+      element.classList.remove("highlighted");
     }
   }
 
   clickEvent(event: Event): void {
-    console.log(event);
     const element = event.target as HTMLElement;
     const clickedManually = event.isTrusted;
 
@@ -204,7 +202,6 @@ export class WidgetComponent {
   }
 
   selectAction(element: HTMLElement): void {
-    console.log('SELECT ACTION', element);
     const exists = this.elementExistsInArray(
       this.selectedElementsForAction,
       element
@@ -217,12 +214,11 @@ export class WidgetComponent {
     }
 
     this._cdr.detectChanges();
-    console.log('SELECTED ACTIONS', this.selectedElementsForAction);
   }
 
   addAction(element: HTMLElement): void {
     this.selectedElementsForAction.push(element);
-    element.classList.add('selected-action');
+    element.classList.add("selected-action");
     element.setAttribute(this.IdentifySelectionByAttr, this.uniqueId);
   }
 
@@ -232,11 +228,11 @@ export class WidgetComponent {
       element
     );
     this.selectedElementsForAction.splice(index, 1);
-    element.classList.remove('selected-action');
+    element.classList.remove("selected-action");
     element.removeAttribute(this.IdentifySelectionByAttr);
   }
 
-  addElement(element: HTMLElement, className = 'selected'): void {
+  addElement(element: HTMLElement, className = "selected"): void {
     element.classList.add(className);
     element.setAttribute(this.IdentifySelectionByAttr, this.uniqueId);
     this.selectedElements.push(element);
@@ -249,8 +245,8 @@ export class WidgetComponent {
       const index = this.elementIndexInArray(this.selectedElements, element);
       this.selectedElements.splice(index, 1);
     }
-    element.classList.remove('selected');
-    element.classList.remove('predicted');
+    element.classList.remove("selected");
+    element.classList.remove("predicted");
     element.removeAttribute(this.IdentifySelectionByAttr);
     this._cdr.detectChanges();
   }
@@ -293,7 +289,7 @@ export class WidgetComponent {
       predictions.forEach((e) => {
         // If element is not already added
         if (!e.getAttribute(this.IdentifySelectionByAttr))
-          this.addElement(e as HTMLElement, 'predicted');
+          this.addElement(e as HTMLElement, "predicted");
       });
     }
   }
