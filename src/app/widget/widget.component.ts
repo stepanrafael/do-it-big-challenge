@@ -132,7 +132,10 @@ export class WidgetComponent {
   resetAll(): void {
     this.removeElements();
     this.selectedElements = [];
-    this.selectedElementsForAction = [];
+    this.selectedElementsForAction.forEach(this.removeAction.bind(this));
+    setTimeout(() => {
+      this.selectedElementsForAction = [];
+    });
     this.actionName = "";
     this.currentState = States.selectElement;
     this._cdr.detectChanges();
@@ -156,6 +159,7 @@ export class WidgetComponent {
       element.click();
     });
     this.resetActions();
+    this.resetAll();
   }
 
   isInWidget(element: HTMLElement): boolean {
@@ -183,7 +187,6 @@ export class WidgetComponent {
     // Everything should behave normal in the widget element
     // Alter functions for the website only
     if (!this.isInWidget(element)) {
-      //
       if (clickedManually) {
         if (this.currentState === States.selectElement) {
           if (element.getAttribute(this.IdentifySelectionByAttr)) {
@@ -220,6 +223,67 @@ export class WidgetComponent {
     this.selectedElementsForAction.push(element);
     element.classList.add("selected-action");
     element.setAttribute(this.IdentifySelectionByAttr, this.uniqueId);
+
+    const predictedActions = this.findSimilarChilds(
+      this.selectedElements,
+      element
+    );
+
+    predictedActions.forEach((el) => {
+      this.addAction(el);
+    });
+  }
+
+  findSimilarChilds(elements: HTMLElement[], selected: HTMLElement) {
+    const result: HTMLElement[] = [];
+    console.log(elements, selected);
+    elements.forEach((el: any) => {
+      [...el.children].forEach((node: HTMLElement) => {
+        if (
+          this.hasMatchingClasses(node, selected) &&
+          this.sameTag(node, selected) &&
+          !node.getAttribute(this.IdentifySelectionByAttr)
+        ) {
+          result.push(node);
+        }
+      });
+    });
+
+    return result;
+  }
+
+  hasMatchingClasses(element1: HTMLElement, element2: HTMLElement) {
+    const classList1 = element1.classList;
+    const classList2 = element2.classList;
+
+    for (let i = 0; i < classList1.length; i++) {
+      if (classList2.contains(classList1[i])) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  hasSameParentStructure(element1: HTMLElement, element2: HTMLElement) {
+    let parent1 = element1.parentNode;
+    let parent2 = element2.parentNode;
+
+    while (parent1 && parent2) {
+      if (parent1 !== parent2) {
+        return false;
+      }
+
+      parent1 = parent1.parentNode;
+      parent2 = parent2.parentNode;
+    }
+
+    // If one element has a parent while the other doesn't, they don't have the same structure
+    if (parent1 || parent2) {
+      return false;
+    }
+
+    return true;
   }
 
   removeAction(element: HTMLElement): void {
@@ -240,14 +304,16 @@ export class WidgetComponent {
   }
 
   removeElement(element: HTMLElement): void {
+    element.classList.remove("selected");
+    element.classList.remove("predicted");
+    element.removeAttribute(this.IdentifySelectionByAttr);
+
     const exists = this.elementExistsInArray(this.selectedElements, element);
     if (exists) {
       const index = this.elementIndexInArray(this.selectedElements, element);
       this.selectedElements.splice(index, 1);
     }
-    element.classList.remove("selected");
-    element.classList.remove("predicted");
-    element.removeAttribute(this.IdentifySelectionByAttr);
+
     this._cdr.detectChanges();
   }
 
@@ -272,6 +338,10 @@ export class WidgetComponent {
       element1.getAttribute(this.IdentifySelectionByAttr) ===
       element2.getAttribute(this.IdentifySelectionByAttr)
     );
+  }
+
+  sameTag(element1: HTMLElement, element2: HTMLElement): boolean {
+    return element1.tagName.toLowerCase() === element2.tagName.toLowerCase();
   }
 
   removeElements(): void {
